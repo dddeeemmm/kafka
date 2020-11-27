@@ -1,0 +1,49 @@
+---
+
+- name: systemd
+  template:
+    src: kafka.service.j2
+    dest: /etc/systemd/system/kafka.service
+  register: kafka_systemd
+
+- name: properties
+  template:
+    src: '{{ item }}'
+    dest: "{{ kafka_dir_work }}/config/{{ item | basename | regex_replace ( '.j2$', '' ) }}"
+    owner: '{{ kafka_user }}'
+    group: '{{ kafka_group }}'
+  loop:
+    - server.properties.j2
+    - consumer.properties.j2
+    - producer.properties.j2
+  register: kafka_properties
+
+
+- block:
+
+  - name: jaas
+    template:
+      src: kafka-jaas.conf.j2
+      dest: '{{ kafka_dir_work }}/config/kafka-jaas.conf'
+      owner: '{{ kafka_user }}'
+      group: '{{ kafka_group }}'
+    register: kafka_jaas
+
+  - name: kafka-server-start.sh
+    lineinfile:
+      path: '{{ kafka_dir_work }}/bin/kafka-server-start.sh'
+      regexp: '{{ item.regexp }}'
+      line: '{{ item.line }}'
+    with_items:
+      - { regexp: 'exec', line: 'exec $base_dir/kafka-run-class.sh $EXTRA_ARGS -Djava.security.auth.login.config=$base_dir/../config/kafka-jaas.conf kafka.Kafka "$@"' }
+
+  when: kafka_sasl | bool
+
+
+- name: enable and start or restart
+  systemd:
+    name: kafka
+    enabled: yes
+    state: '{% if kafka_systemd.changed or kafka_properties.changed or kafka_jaas.changed %}restarted{% else %}started{% endif %}'
+    daemon_reload: '{% if kafka_systemd.changed %}true{% else %}false{% endif %}'
+

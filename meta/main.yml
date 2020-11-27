@@ -1,0 +1,17 @@
+galaxy_info:
+  author: Dmitrij Petrov
+  description: Install and config kafka ( standalone | cluster ) + sasl plain
+
+  license: MIT
+
+  min_ansible_version: 2.9
+
+  platforms:
+   - name: EL
+     versions:
+     - all
+   - name: Ubuntu
+     versions:
+     - all
+
+  galaxy_tags: [ 'kafka', 'kafka-cluster', 'kafka-sasl' ]

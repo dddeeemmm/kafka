@@ -1,0 +1,18 @@
+# {{ ansible_managed }}
+
+[Unit]
+Description=Kafka
+After=network.target
+
+[Service]
+Type=simple
+User={{ kafka_user }}
+Group={{ kafka_group }}
+ExecStart=/bin/sh -c '{{ kafka_dir_work }}/bin/kafka-server-start.sh {{ kafka_dir_work }}/config/server.properties > {{ kafka_dir_work }}/logs/kafka.log 2>&1'
+ExecStop={{ kafka_dir_work }}/bin/kafka-server-stop.sh
+#Restart=on-abnormal
+Restart=always
+TimeoutSec=10
+
+[Install]
+WantedBy=multi-user.target

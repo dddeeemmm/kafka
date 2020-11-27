@@ -1,0 +1,20 @@
+#{{ ansible_managed }}
+# list of brokers used for bootstrapping knowledge about the rest of the cluster
+# format: host1:port1,host2:port2 ...
+bootstrap.servers={{ kafka_bootstrap_servers }}
+
+# consumer group id
+group.id=test-consumer-group
+
+# What to do when there is no initial offset in Kafka or if the current
+# offset does not exist any more on the server: latest, earliest, none
+#auto.offset.reset
+
+{% if kafka_sasl | bool %}
+# sasl
+security.protocol=SASL_PLAINTEXT
+sasl.mechanism=PLAIN
+zookeeper.connect={{ kafka_zookeeper_connect }}
+zookeeper.connection.timeout.ms=6000
+group.id=test-consumer-group
+{% endif %}

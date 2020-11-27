@@ -1,0 +1,6 @@
+---
+
+- include: install.yml
+  when: kafka_install | bool
+
+- include: config.yml

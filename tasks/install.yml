@@ -1,0 +1,33 @@
+---
+
+- name: java
+  package:
+    name: '{{ kafka_java_package }}'
+
+- name: group
+  group:
+    name: '{{ kafka_group }}'
+
+- name: user
+  user:
+    name: '{{ kafka_user }}'
+    group: '{{ kafka_group }}'
+    system: yes
+
+- name: download
+  unarchive:
+    src: '{{ kafka_url_src }}'
+    dest: /opt
+    remote_src: yes
+    owner: '{{ kafka_user }}'
+    group: '{{ kafka_group }}'
+
+- name: directories
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: '{{ kafka_user }}'
+    group: '{{ kafka_group }}'
+  loop:
+    - '{{ kafka_dir_data }}'
+    - '{{ kafka_dir_logs }}'

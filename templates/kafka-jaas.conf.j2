@@ -1,0 +1,23 @@
+KafkaServer {
+   org.apache.kafka.common.security.plain.PlainLoginModule required
+   username="{{ kafka_admin_name }}"
+   password="{{ kafka_admin_password }}"
+   user_{{ kafka_admin_name }}="{{ kafka_admin_password }}";
+{% if kafka_users is defined and kafka_users != '' and kafka_users != [] %}
+{% for user in kafka_users %}
+   user_{{ user.name }}="{{ user.password }}"{% if loop.last %};{% endif %}
+{% endfor %}
+{% endif %}
+};
+
+KafkaClient {
+  org.apache.kafka.common.security.plain.PlainLoginModule required
+  username="{{ kafka_admin_name }}"
+  password="{{ kafka_admin_password }}";
+};
+
+Client {
+   org.apache.kafka.common.security.plain.PlainLoginModule required
+   username="{{ kafka_admin_name }}"
+   password="{{ kafka_admin_password }}";
+};
